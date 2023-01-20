@@ -3,7 +3,7 @@ plugins {
 }
 
 allprojects {
-    group 'org.kafka'
+    group 'org.kafka.learn'
     version '1.0-SNAPSHOT'
 
     repositories {
