@@ -1,15 +1,13 @@
 package org.kafka.learn;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 public class MessageProducer {
@@ -47,8 +45,34 @@ public class MessageProducer {
         }
     }
 
+    private void publishMessageASync(String key, String value) {
+        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, value);
+        Callback callback = (metadata, exception) -> {
+            if(Optional.ofNullable(exception).isPresent()) {
+                logger.error("Exception occurred in callback {} ", exception.getMessage());
+            } else {
+                logger.info("message {} sent successfully for the key {}", value, key);
+                logger.info("Published message Offset in callback is {} and partition : {}", metadata.offset(), metadata.partition());
+            }
+        };
+        kafkaProducer.send(producerRecord, callback);
+    }
+
     public static void main(String[] args) {
         MessageProducer messageProducer = new MessageProducer(createProducerPropertiesMap());
-        messageProducer.publishMessageSync(null, "sending message2 from api call");
+        //messageProducer.publishMessageSync(null, "sending message2 from api call");
+        messageProducer.publishMessageASync(null, "sending message asynchronously from api call");
+
+        //sometimes message is published after the main thread is ending due to async call.
+        //adding 3 seconds sleep for main thread after the async method call
+        try {
+            logger.info("holding the main thread to sleep for 3 seconds");
+            Thread.sleep(3000);
+            logger.info("sleep for 3 seconds completed");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
+
+
 }
