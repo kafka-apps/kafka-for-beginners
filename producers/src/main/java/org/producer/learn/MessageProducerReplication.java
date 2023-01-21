@@ -1,7 +1,7 @@
-package org.kafka.learn;
+package org.producer.learn;
 
 import org.apache.kafka.clients.producer.*;
-import org.kafka.util.KafkaConfigUtil;
+import org.producer.util.KafkaConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

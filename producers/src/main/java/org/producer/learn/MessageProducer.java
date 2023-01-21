@@ -1,13 +1,11 @@
-package org.kafka.learn;
+package org.producer.learn;
 
 import org.apache.kafka.clients.producer.*;
-import org.kafka.util.KafkaConfigUtil;
+import org.producer.util.KafkaConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 
 /**
  * sample producer class to send messages synchronously and asynchronously

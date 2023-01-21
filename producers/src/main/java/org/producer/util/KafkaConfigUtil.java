@@ -1,4 +1,4 @@
-package org.kafka.util;
+package org.producer.util;
 
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
