@@ -1,8 +1,6 @@
-package org.kafka.launcher;
+package org.kafka.learn;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.kafka.learn.MessageProducer;
+import org.apache.kafka.clients.producer.*;
 import org.kafka.util.KafkaConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,16 +8,19 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 
 /**
- * sending messages to topic synchrnously
- * messages Or input accepted from console
- * hyphen (-) is the key-value separator
- * passing the key is optional. if no key and - is passed, the key=null
-
+ * created a topic test-topic-api-1-replication
+ * with replicas=3 , partitions=3 on terminal at /kafka_2.13-3.2.1/bin/
+ *   	 ./kafka-topics.sh --create --topic test-topic-api-1-replication --bootstrap-server localhost:9092 --replication-factor 3 --partitions 3
+ *   	 setting min.insync.replicas=2 for the topic
+ *   	./kafka-configs.sh --alter --bootstrap-server localhost:9092 --entity-type topics --entity-name test-topic-api-1-replication --add-config min.insync.replicas=2
+ *   start kafka console producer
+ *   ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test-topic-api-1-replication --from-beginning
  */
-public class CommandLineLauncher {
-    private static final Logger logger = LoggerFactory.getLogger(CommandLineLauncher.class);
+public class MessageProducerReplication {
 
-    private static String topicName = "test-topic-api-1";
+    private static final Logger logger = LoggerFactory.getLogger(MessageProducerReplication.class);
+
+    private static String topicName = "test-topic-api-1-replication";
 
     public static String commandLineStartLogo(){
 
@@ -89,14 +90,18 @@ public class CommandLineLauncher {
             System.out.println(userInput);
         }
     }
-
+    public static KafkaProducer<String, String> createProducer(){
+        Map<String, Object> producerProps = KafkaConfigUtil.createProducerPropertiesMap();
+        return  KafkaConfigUtil.createProducer(producerProps);
+    }
 
     public static void publishMessage(String input){
         Map<String, Object> producerPropertiesMap = KafkaConfigUtil.createProducerPropertiesMap();
         producerPropertiesMap.put(ProducerConfig.ACKS_CONFIG, "all");
+        producerPropertiesMap.put(ProducerConfig.RETRIES_CONFIG, 10);
+        producerPropertiesMap.put(ProducerConfig.RETRY_BACKOFF_MS_CONFIG, 3000);
 
         KafkaProducer<String, String> kafkaProducer = KafkaConfigUtil.createProducer(producerPropertiesMap);
-
         StringTokenizer stringTokenizer = new StringTokenizer(input, "-");
         Integer noOfTokens = stringTokenizer.countTokens();
         switch (noOfTokens){
@@ -123,7 +128,9 @@ public class CommandLineLauncher {
             if(input.equals("00")) {
                 flag = false;
             }else {
+                KafkaProducer<String, String> kafkaProducer = createProducer();
                 publishMessage(input);
+                kafkaProducer.close();
             }
         }
         logger.info("Exiting from Option : " + option);
@@ -135,6 +142,7 @@ public class CommandLineLauncher {
         launchCommandLine();
         System.out.println(BYE());
 
-
     }
+
+
 }
