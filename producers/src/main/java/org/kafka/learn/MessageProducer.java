@@ -1,15 +1,17 @@
 package org.kafka.learn;
 
 import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.StringSerializer;
+import org.kafka.util.KafkaConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * sample producer class to send messages synchronously and asynchronously
+ */
 public class MessageProducer {
 
     private static final Logger logger = LoggerFactory.getLogger(MessageProducer.class);
@@ -22,15 +24,11 @@ public class MessageProducer {
         kafkaProducer = new KafkaProducer<String, String>(producerPropertiesMap);
     }
 
-    private static Map<String, Object> createProducerPropertiesMap() {
-        Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
-        propertiesMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        propertiesMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        return propertiesMap;
+    public void close(){
+        kafkaProducer.close();
     }
 
-    private void publishMessageSynchronously(String key, String value) {
+    public void publishMessageSynchronously(String key, String value) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, value);
         try {
             RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
@@ -45,7 +43,7 @@ public class MessageProducer {
         }
     }
 
-    private void publishMessageASync(String key, String value) {
+    public void publishMessageASync(String key, String value) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, value);
         Callback callback = (metadata, exception) -> {
             if(Optional.ofNullable(exception).isPresent()) {
@@ -87,13 +85,12 @@ public class MessageProducer {
     }
 
     public static void main(String[] args) {
-        MessageProducer messageProducer = new MessageProducer(createProducerPropertiesMap());
+        MessageProducer messageProducer = new MessageProducer(KafkaConfigUtil.createProducerPropertiesMap());
 
         //sending messages synchronously
         //messageProducer.publishMessageSynchronously(null, "sending message2 from api call");
 
         messageProducer.sendMultipleMessagesUsingKeysSynchronously();
-
 
         //asynchronously sending messages
         /*
@@ -101,6 +98,11 @@ public class MessageProducer {
 
         //sometimes message is published after the main thread is ending due to async call.
         //adding 3 seconds sleep for main thread after the async method call
+        messageProducer.addSleep(3000);
+        */
+    }
+
+    private void addSleep(int i) {
         try {
             logger.info("holding the main thread to sleep for 3 seconds");
             Thread.sleep(3000);
@@ -108,12 +110,7 @@ public class MessageProducer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        */
-
     }
-
-
 
 
 }
