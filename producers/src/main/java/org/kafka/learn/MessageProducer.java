@@ -30,7 +30,7 @@ public class MessageProducer {
         return propertiesMap;
     }
 
-    private void publishMessageSync(String key, String value) {
+    private void publishMessageSynchronously(String key, String value) {
         ProducerRecord<String, String> producerRecord = new ProducerRecord<>(topicName, key, value);
         try {
             RecordMetadata recordMetadata = kafkaProducer.send(producerRecord).get();
@@ -58,9 +58,45 @@ public class MessageProducer {
         kafkaProducer.send(producerRecord, callback);
     }
 
+    /**
+     *  key1,2,3,4 are distributed among 3 partitions.
+     *  messages any 2 keys sent to same partition
+     *  the partition number decided by default partitioner
+     **/
+    private void sendMultipleMessagesUsingKeysSynchronously() {
+        publishMessageSynchronously("key1", "message1 of key1");
+        publishMessageSynchronously("key1", "message2 of key1");
+
+        publishMessageSynchronously("key2", "message1 of key2");
+
+        publishMessageSynchronously("key3", "message1 of key3");
+
+        publishMessageSynchronously("key1", "message3 of key1");
+
+        publishMessageSynchronously("key3", "message2 of key3");
+
+        publishMessageSynchronously("key2", "message2 of key2");
+        publishMessageSynchronously("key2", "message4 of key2");
+        publishMessageSynchronously("key2", "message3 of key2");
+
+        publishMessageSynchronously("key4", "message1 of key4");
+        publishMessageSynchronously("key4", "message4 of key4");
+        publishMessageSynchronously("key4", "message2 of key4");
+
+
+    }
+
     public static void main(String[] args) {
         MessageProducer messageProducer = new MessageProducer(createProducerPropertiesMap());
-        //messageProducer.publishMessageSync(null, "sending message2 from api call");
+
+        //sending messages synchronously
+        //messageProducer.publishMessageSynchronously(null, "sending message2 from api call");
+
+        messageProducer.sendMultipleMessagesUsingKeysSynchronously();
+
+
+        //asynchronously sending messages
+        /*
         messageProducer.publishMessageASync(null, "sending message asynchronously from api call");
 
         //sometimes message is published after the main thread is ending due to async call.
@@ -72,7 +108,12 @@ public class MessageProducer {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
+        */
+
     }
+
+
 
 
 }
