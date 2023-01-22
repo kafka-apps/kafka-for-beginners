@@ -1,8 +1,8 @@
-package org.producer.launcher;
+package org.kafka.producer.launcher;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.producer.util.KafkaConfigUtil;
+import org.kafka.producer.util.KafkaConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
