@@ -2,7 +2,7 @@ package org.kafka.producer.launcher;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.kafka.producer.util.KafkaConfigUtil;
+import org.kafka.producer.util.ProducerConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,20 +91,20 @@ public class CommandLineLauncher {
 
 
     public static void publishMessage(String input){
-        Map<String, Object> producerPropertiesMap = KafkaConfigUtil.createProducerPropertiesMap();
+        Map<String, Object> producerPropertiesMap = ProducerConfigUtil.createProducerPropertiesMap();
         producerPropertiesMap.put(ProducerConfig.ACKS_CONFIG, "all");
 
-        KafkaProducer<String, String> kafkaProducer = KafkaConfigUtil.createProducer(producerPropertiesMap);
+        KafkaProducer<String, String> kafkaProducer = ProducerConfigUtil.createProducer(producerPropertiesMap);
 
         StringTokenizer stringTokenizer = new StringTokenizer(input, "-");
         Integer noOfTokens = stringTokenizer.countTokens();
         switch (noOfTokens){
             case 1:
-                KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName,
+                ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName,
                         null, stringTokenizer.nextToken(), logger);
                 break;
             case 2:
-                KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName,
+                ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName,
                         stringTokenizer.nextToken(),stringTokenizer.nextToken(), logger);
                 break;
             default:

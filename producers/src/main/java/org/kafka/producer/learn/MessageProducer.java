@@ -1,7 +1,7 @@
 package org.kafka.producer.learn;
 
 import org.apache.kafka.clients.producer.*;
-import org.kafka.producer.util.KafkaConfigUtil;
+import org.kafka.producer.util.ProducerConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +17,13 @@ public class MessageProducer {
     String topicName = "test-topic-api-1";
 
     private static KafkaProducer<String, String> createKafkaProducer() {
-        Map<String, Object> producerPropertiesMap = KafkaConfigUtil.createProducerPropertiesMap();
-        return KafkaConfigUtil.createProducer(producerPropertiesMap);
+        Map<String, Object> producerPropertiesMap = ProducerConfigUtil.createProducerPropertiesMap();
+        return ProducerConfigUtil.createProducer(producerPropertiesMap);
     }
 
 
     private void publishMessageSynchronously(KafkaProducer<String, String> kafkaProducer, String topicName, String key, String value, Logger logger) {
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, key, value, logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, key, value, logger);
     }
 
     /**
@@ -33,28 +33,28 @@ public class MessageProducer {
      **/
     private void sendMultipleMessagesUsingKeysSynchronously(KafkaProducer<String, String> kafkaProducer) {
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message1 of key1", logger);
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message2 of key1", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message1 of key1", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message2 of key1", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message1 of key2", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message1 of key2", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key3", "message1 of key3", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key3", "message1 of key3", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message3 of key1", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key1", "message3 of key1", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key3", "message2 of key3", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key3", "message2 of key3", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message2 of key2", logger);
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message4 of key2", logger);
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message3 of key2", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message2 of key2", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message4 of key2", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key2", "message3 of key2", logger);
 
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message1 of key4", logger);
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message4 of key4", logger);
-        KafkaConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message2 of key4", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message1 of key4", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message4 of key4", logger);
+        ProducerConfigUtil.publishMessageSynchronously(kafkaProducer, topicName, "key4", "message2 of key4", logger);
     }
 
     private void publishMessageASync(KafkaProducer<String, String> kafkaProducer, String topicName, String key, String value, Logger logger) {
-        KafkaConfigUtil.publishMessageASync(kafkaProducer, topicName, key, value, logger);
+        ProducerConfigUtil.publishMessageASync(kafkaProducer, topicName, key, value, logger);
     }
 
     private void addSleep(int i) {

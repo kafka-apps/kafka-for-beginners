@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-public class KafkaConfigUtil {
+public class ProducerConfigUtil {
 
-    private KafkaConfigUtil() {}
+    private ProducerConfigUtil() {}
 
     public static Map<String, Object> createProducerPropertiesMap() {
         Map<String, Object> propertiesMap = new HashMap<>();
-        propertiesMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092, localhost:9093, localhost:9094");
+        propertiesMap.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092,localhost:9093,localhost:9094");
         propertiesMap.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         propertiesMap.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         return propertiesMap;
