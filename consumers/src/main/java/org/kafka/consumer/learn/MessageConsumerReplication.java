@@ -22,7 +22,8 @@ public class MessageConsumerReplication {
         Map<String, Object> consumerPropertiesMap = ConsumerConfigUtil.createConsumerPropertiesMap();
         consumerPropertiesMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer");
         //consumerPropertiesMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        consumerPropertiesMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
+        //consumerPropertiesMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
+        consumerPropertiesMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 10000);
         return ConsumerConfigUtil.createKafkaConsumer(consumerPropertiesMap);
     }
 
@@ -32,7 +33,6 @@ public class MessageConsumerReplication {
         try {
             while(true) {
                 ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(timeOutDuration);
-                Thread.sleep(7000);
                 consumerRecords.forEach(record -> {
                     logger.info("consumer record: key {} and value {} and partition {}",
                             record.key(), record.value(), record.partition());
