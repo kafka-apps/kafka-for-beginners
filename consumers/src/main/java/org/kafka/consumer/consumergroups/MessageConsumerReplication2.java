@@ -21,7 +21,6 @@ public class MessageConsumerReplication2 {
     private KafkaConsumer<String, String> createConsumer() {
         Map<String, Object> consumerPropertiesMap = ConsumerConfigUtil.createConsumerPropertiesMap();
         consumerPropertiesMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer-2");
-        consumerPropertiesMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return ConsumerConfigUtil.createKafkaConsumer(consumerPropertiesMap);
     }
 
