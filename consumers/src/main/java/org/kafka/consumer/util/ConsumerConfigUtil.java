@@ -9,6 +9,8 @@ import java.util.Map;
 
 public class ConsumerConfigUtil {
 
+    public static final String serialiaziedFilePath = "consumers/src/main/resources/offset.ser";
+
     private ConsumerConfigUtil() {}
 
     public static Map<String, Object> createConsumerPropertiesMap() {

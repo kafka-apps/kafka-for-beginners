@@ -2,19 +2,23 @@ package org.kafka.consumer.commitoffsets;
 
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
+import org.kafka.consumer.listener.MessageRebalanceListener;
 import org.kafka.consumer.util.ConsumerConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MessageConsumerReplicationCommitSpecificOffset {
+public class MessageConsumerReplicationSeek {
 
-    private static final Logger logger = LoggerFactory.getLogger(MessageConsumerReplicationCommitSpecificOffset.class);
+    private static final Logger logger = LoggerFactory.getLogger(MessageConsumerReplicationSeek.class);
 
     private static final String topicName = "test-topic-api-1-replication";
 
@@ -31,7 +35,8 @@ public class MessageConsumerReplicationCommitSpecificOffset {
     private void pollKafka(KafkaConsumer<String, String> kafkaConsumer) {
         Map<TopicPartition, OffsetAndMetadata> offsetAndMetadataMap = new HashMap<>();
 
-        kafkaConsumer.subscribe(List.of(topicName));
+        kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener(kafkaConsumer));
+
         Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
         try {
             while(true) {
@@ -43,7 +48,8 @@ public class MessageConsumerReplicationCommitSpecificOffset {
                             new OffsetAndMetadata(record.offset() + 1, null)); //always add +1 to the offset to consume the correct/next offset data
                 });
                 if(consumerRecords.count() > 0) {
-                    kafkaConsumer.commitSync(offsetAndMetadataMap); //commits the last record offset returned by the poll
+                    //kafkaConsumer.commitSync(offsetAndMetadataMap); //commits the last record offset returned by the poll
+                    writeOffsetsMapToPath(offsetAndMetadataMap);
                     logger.info("offset committed");
                 }
             }
@@ -55,11 +61,29 @@ public class MessageConsumerReplicationCommitSpecificOffset {
         } finally {
             kafkaConsumer.close();
         }
+    }
 
+    private void writeOffsetsMapToPath(Map<TopicPartition, OffsetAndMetadata> offsetsMap) throws IOException {
+
+        FileOutputStream fout = null;
+        ObjectOutputStream oos = null;
+        try {
+            fout = new FileOutputStream(ConsumerConfigUtil.serialiaziedFilePath);
+            oos = new ObjectOutputStream(fout);
+            oos.writeObject(offsetsMap);
+            logger.info("Offsets Written Successfully!");
+        } catch (Exception ex) {
+            logger.error("Exception Occurred while writing the file : " + ex);
+        } finally {
+            if(fout!=null)
+                fout.close();
+            if(oos!=null)
+                oos.close();
+        }
     }
 
     public static void main(String[] args) {
-        MessageConsumerReplicationCommitSpecificOffset messageConsumerReplication = new MessageConsumerReplicationCommitSpecificOffset();
+        MessageConsumerReplicationSeek messageConsumerReplication = new MessageConsumerReplicationSeek();
         KafkaConsumer<String, String> kafkaConsumer = messageConsumerReplication.createConsumer();
         messageConsumerReplication.pollKafka(kafkaConsumer);
     }
