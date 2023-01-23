@@ -21,6 +21,7 @@ public class MessageConsumerReplicationRebalanceListener {
     private KafkaConsumer<String, String> createConsumer() {
         Map<String, Object> consumerPropertiesMap = ConsumerConfigUtil.createConsumerPropertiesMap();
         consumerPropertiesMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer");
+        consumerPropertiesMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "false");
         //consumerPropertiesMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         //consumerPropertiesMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 5000);
         //consumerPropertiesMap.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, 10000);
@@ -28,7 +29,7 @@ public class MessageConsumerReplicationRebalanceListener {
     }
 
     private void pollKafka(KafkaConsumer<String, String> kafkaConsumer) {
-        kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener()); //linking with the MessageRebalanceListener
+        kafkaConsumer.subscribe(List.of(topicName), new MessageRebalanceListener(kafkaConsumer)); //linking with the MessageRebalanceListener
         Duration timeOutDuration = Duration.of(100, ChronoUnit.MILLIS);
         try {
             while(true) {
@@ -37,6 +38,7 @@ public class MessageConsumerReplicationRebalanceListener {
                     logger.info("consumer record: key {} and value {} and partition {}",
                             record.key(), record.value(), record.partition());
                 });
+                kafkaConsumer.commitSync();
             }
         } catch(Exception e) {
             logger.error("exception in pollKafka {}", e);
