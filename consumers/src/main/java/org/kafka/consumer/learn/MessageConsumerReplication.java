@@ -1,5 +1,6 @@
 package org.kafka.consumer.learn;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.kafka.consumer.util.ConsumerConfigUtil;
@@ -19,6 +20,8 @@ public class MessageConsumerReplication {
 
     private KafkaConsumer<String, String> createConsumer() {
         Map<String, Object> consumerPropertiesMap = ConsumerConfigUtil.createConsumerPropertiesMap();
+        consumerPropertiesMap.put(ConsumerConfig.GROUP_ID_CONFIG, "messageconsumer-2");
+        consumerPropertiesMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         return ConsumerConfigUtil.createKafkaConsumer(consumerPropertiesMap);
     }
 
